@@ -1,0 +1,14 @@
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 30
+      MemorySize: 1024
+      Handler: lambda_function.lambda_handler
+      CodeUri: C:\Users\LuizRocha\PycharmProjects\uploda-envelope-attachments-zohocrm-box\Main
+      Runtime: python3.9
+      Environment:
+        Variables:
+          client_id: tn34t2bofmtqsc6rb0wrbuio70ujbu9y
+          client_secret: pGDf0A392qZjCfsrqhlUgulgcfIT2IQs
+          ds_client_id: 44b0a82c-4de3-49a2-b7e4-b74c1a0b38e9
