@@ -72,7 +72,7 @@ async def download_and_send(box_client, contract, document, envelope_api, envelo
     if document_name.startswith('Procura'):
         document_name = document_name + "_" + contract
         folder_id = '18731439245'
-    elif document_name.startswith('Declara'):
+    elif document_name.startswith('DH'):
         document_name = document_name + "_" + contract
         folder_id = '18731439245'
     elif document_name == "Summary":
