@@ -19,12 +19,12 @@ def uploadFile(boxClient: boxsdk.client.Client, folderID, filePath):
         print(e)
     #Upload File or New Version
     try:
-        new_file = upload_folder.upload(filePath, preflight_check=True)
+        new_file: boxsdk.object.file.File = upload_folder.upload(filePath, preflight_check=True)
         file_id = new_file.id
     except BoxAPIException as e:
         if 'conflicts' not in e.context_info:
             print(e)
         else:
             file_id = e.context_info['conflicts']['id']
-            new_version = boxClient.file(file_id).update_contents(filePath)
-    return file_id
+            new_file = boxClient.file(file_id).update_contents(filePath)
+    return new_file
