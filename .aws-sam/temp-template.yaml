@@ -5,5 +5,5 @@ Resources:
       Timeout: 300
       MemorySize: 128
       Handler: Main.lambda_function.lambda_handler
-      CodeUri: C:\Users\LuizRocha\PycharmProjects\uploda-envelope-attachments-zohocrm-box\Main
-      Runtime: python3.9
+      CodeUri: Main
+      Runtime: python3.11

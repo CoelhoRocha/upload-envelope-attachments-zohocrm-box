@@ -1,0 +1,66 @@
+name: AWS Lambda Update
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  sam-validate-build-deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      env-name: ${{ steps.env-name.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v3.0.0
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Configure AWS credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: SAM Validate
+        run: |
+          sam validate
+      - name: Configure variables
+        shell: bash
+        id: vars
+        env:
+          REPO: ${{ github.repository }}
+          HASH: ${{ github.sha }}
+          REF: ${{ github.ref }}
+        run: |
+          # Set variables
+          BRANCH=${REF#refs/heads/}
+          REPOSITORY=`echo $REPO | tr "/" "-"`
+          ENVIRONMENT=$BRANCH-$REPOSITORY-${{ secrets.AWS_REGION }}
+          # In this step we are setting variables and persistenting them
+          # into the environment so that they can be utilized in other steps
+          echo "::set-output name=branch::$BRANCH"
+          echo "::set-output name=repository::$REPOSITORY"
+          echo "::set-output name=environment::$ENVIRONMENT"
+          # Output variables to ensure their values are set correctly when ran
+          echo "The region is ${{ secrets.AWS_REGION }}"
+          echo "The repository is $REPOSITORY"
+          echo "The environment is $ENVIRONMENT"
+          echo "The branch is $BRANCH"
+      - name: SAM Build
+        run: |
+          sam build
+      - name: ZIP
+        uses: papeloto/action-zip@v1
+        with:
+          files: .aws-sam/build/MainFunction
+          recursive: true
+          dest: lambda.zip
+      - name: AWS Lambda Deploy
+        uses: yvesgurcan/deploy-lambda-function@v0.0.5
+        with:
+          package: lambda.zip
+          function-name: upload-envelope-attachments-zohocrm-box
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_SECRET_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

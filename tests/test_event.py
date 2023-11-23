@@ -1,26 +1,21 @@
 import json
-import re
-from box_auth import boxAuth
-from box_file_metadata import setFileMetadata
-import boxsdk.object.metadata_template
-from datetime import datetime
-import os.path
+import pytest
+import os
 
-from Main.lambda_function import lambda_handler
+from lambda_function import lambda_handler
 
-# event = json.load(open('../Event/Event.json'))
-with open('../Event/Event.json', encoding='utf-8') as f:
-    event = json.load(f)
 
-# envelope_id = event['envelopeId']
-# documents = event['documents']
-# contratantes = event['contratantes']
-# servico = event['servico']
+@pytest.fixture(scope="function")
+def event_fixture():
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    event_file = os.path.join(base_dir, "Event", "Event.json")
+    with open(event_file, encoding="utf-8") as f:
+        return json.load(f)
 
-# print(event)
 
-# # print(event)
-lambda_handler(event, '')
+def test_lambda_handler(event_fixture):
+    res = lambda_handler(event_fixture, "")
+    assert res["statusCode"] == 200
 
 
 # Update metadata test

@@ -1,0 +1,8 @@
+.aws-sam
+.benchmarks
+.idea
+.vscode
+.venv
+__pycache__
+.pytest_cache
+```
